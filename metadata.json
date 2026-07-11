@@ -1,0 +1,6 @@
+{
+  "name": "NURA",
+  "description": "An AI-powered menopause health companion for women aged 45 to 60, providing symptom logging, timeline journaling, personalized AI chat companion, and doctor-ready clinical report summaries.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

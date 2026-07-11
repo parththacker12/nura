@@ -1,0 +1,19 @@
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,100..900;1,9..144,100..900&family=Inter:wght@100..900&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-serif: "Fraunces", Georgia, serif;
+}
+
+/* Custom scrollbar and ambient styles */
+body {
+  background-color: #FBF7F2;
+  color: #2D2A32;
+  font-family: var(--font-sans);
+}
+
+.font-serif-heading {
+  font-family: var(--font-serif);
+}
+
