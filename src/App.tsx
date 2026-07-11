@@ -302,42 +302,83 @@ Over the past ~6 weeks, Meera reports worsening sleep, increasing hot flashes an
       title: "Select your main symptoms",
       description: "What have you been experiencing recently? (Select all that apply)",
       input: (
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-3 max-h-[300px] overflow-y-auto p-1">
-          {[
-            'hot flashes',
-            'night sweats',
-            'sleep disturbance',
-            'brain fog',
-            'mood changes',
-            'irritability',
-            'anxiety',
-            'fatigue',
-            'joint aches',
-            'headache',
-            'palpitations',
-            'spotting'
-          ].map((sym) => {
-            const isSelected = onboardingData.symptoms.includes(sym);
-            return (
-              <button
-                key={sym}
-                type="button"
-                onClick={() => {
-                  const updated = isSelected
-                    ? onboardingData.symptoms.filter((x) => x !== sym)
-                    : [...onboardingData.symptoms, sym];
-                  setOnboardingData({ ...onboardingData, symptoms: updated });
-                }}
-                className={`p-3 rounded-xl border text-center text-sm capitalize transition-all ${
-                  isSelected
-                    ? 'border-[#8BA888] bg-[#8BA888]/10 text-[#5B4B6E] font-semibold'
-                    : 'border-[#8A8391]/20 bg-white text-[#2D2A32] hover:border-[#8A8391]'
-                }`}
-              >
-                {sym}
-              </button>
-            );
-          })}
+        <div className="space-y-4">
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-3 max-h-[220px] overflow-y-auto p-1">
+            {Array.from(new Set([
+              'hot flashes',
+              'night sweats',
+              'sleep disturbance',
+              'brain fog',
+              'mood changes',
+              'irritability',
+              'anxiety',
+              'fatigue',
+              'joint aches',
+              'headache',
+              'palpitations',
+              'spotting',
+              ...onboardingData.symptoms
+            ])).map((sym) => {
+              const isSelected = onboardingData.symptoms.includes(sym);
+              return (
+                <button
+                  key={sym}
+                  type="button"
+                  onClick={() => {
+                    const updated = isSelected
+                      ? onboardingData.symptoms.filter((x) => x !== sym)
+                      : [...onboardingData.symptoms, sym];
+                    setOnboardingData({ ...onboardingData, symptoms: updated });
+                  }}
+                  className={`p-3 rounded-xl border text-center text-sm capitalize transition-all ${
+                    isSelected
+                      ? 'border-[#8BA888] bg-[#8BA888]/10 text-[#5B4B6E] font-semibold'
+                      : 'border-[#8A8391]/20 bg-white text-[#2D2A32] hover:border-[#8A8391]'
+                  }`}
+                >
+                  {sym}
+                </button>
+              );
+            })}
+          </div>
+          <div className="flex gap-2 p-1 bg-[#FBF7F2] rounded-xl border border-[#8A8391]/10">
+            <input
+              type="text"
+              placeholder="Or type a custom symptom and press Enter..."
+              className="flex-1 px-3 py-2 text-xs bg-white border border-[#8A8391]/15 rounded-lg text-[#2D2A32] focus:outline-none focus:ring-1 focus:ring-[#5B4B6E]"
+              id="onboarding-custom-symptom"
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  e.preventDefault();
+                  const val = e.currentTarget.value.trim().toLowerCase();
+                  if (val) {
+                    if (!onboardingData.symptoms.includes(val)) {
+                      setOnboardingData({ ...onboardingData, symptoms: [...onboardingData.symptoms, val] });
+                    }
+                    e.currentTarget.value = '';
+                  }
+                }
+              }}
+            />
+            <button
+              type="button"
+              onClick={() => {
+                const input = document.getElementById('onboarding-custom-symptom') as HTMLInputElement;
+                if (input) {
+                  const val = input.value.trim().toLowerCase();
+                  if (val) {
+                    if (!onboardingData.symptoms.includes(val)) {
+                      setOnboardingData({ ...onboardingData, symptoms: [...onboardingData.symptoms, val] });
+                    }
+                    input.value = '';
+                  }
+                }
+              }}
+              className="bg-[#5B4B6E] hover:bg-[#5B4B6E]/95 text-white px-4 py-2 rounded-lg text-xs font-semibold"
+            >
+              Add
+            </button>
+          </div>
         </div>
       )
     },
@@ -346,30 +387,76 @@ Over the past ~6 weeks, Meera reports worsening sleep, increasing hot flashes an
       title: "Do you have any medical history?",
       description: "Such as thyroid conditions, blood pressure, family histories.",
       input: (
-        <div className="space-y-2">
-          {['hypothyroidism', 'borderline high blood pressure', 'family history of osteoporosis (mother)', 'No HRT yet'].map((hist) => {
-            const isSelected = onboardingData.medicalHistory.includes(hist);
-            return (
-              <button
-                key={hist}
-                type="button"
-                onClick={() => {
-                  const updated = isSelected
-                    ? onboardingData.medicalHistory.filter((x) => x !== hist)
-                    : [...onboardingData.medicalHistory, hist];
-                  setOnboardingData({ ...onboardingData, medicalHistory: updated });
-                }}
-                className={`w-full p-3 rounded-xl border text-left flex items-center justify-between transition-all ${
-                  isSelected
-                    ? 'border-[#5B4B6E] bg-[#5B4B6E]/5 text-[#5B4B6E]'
-                    : 'border-[#8A8391]/20 bg-white text-[#2D2A32]'
-                }`}
-              >
-                <span>{hist}</span>
-                {isSelected ? <Check className="w-4 h-4 text-[#5B4B6E]" /> : <div className="w-4 h-4 border rounded" />}
-              </button>
-            );
-          })}
+        <div className="space-y-3">
+          <div className="space-y-2 max-h-[220px] overflow-y-auto p-1">
+            {Array.from(new Set([
+              'hypothyroidism',
+              'borderline high blood pressure',
+              'family history of osteoporosis (mother)',
+              'No HRT yet',
+              ...onboardingData.medicalHistory
+            ])).map((hist) => {
+              const isSelected = onboardingData.medicalHistory.includes(hist);
+              return (
+                <button
+                  key={hist}
+                  type="button"
+                  onClick={() => {
+                    const updated = isSelected
+                      ? onboardingData.medicalHistory.filter((x) => x !== hist)
+                      : [...onboardingData.medicalHistory, hist];
+                    setOnboardingData({ ...onboardingData, medicalHistory: updated });
+                  }}
+                  className={`w-full p-3 rounded-xl border text-left flex items-center justify-between transition-all ${
+                    isSelected
+                      ? 'border-[#5B4B6E] bg-[#5B4B6E]/5 text-[#5B4B6E]'
+                      : 'border-[#8A8391]/20 bg-white text-[#2D2A32] hover:border-[#8A8391]'
+                  }`}
+                >
+                  <span className="text-sm capitalize">{hist}</span>
+                  {isSelected ? <Check className="w-4 h-4 text-[#5B4B6E]" /> : <div className="w-4 h-4 border rounded border-[#8A8391]/30" />}
+                </button>
+              );
+            })}
+          </div>
+          <div className="flex gap-2 p-1 bg-[#FBF7F2] rounded-xl border border-[#8A8391]/10">
+            <input
+              type="text"
+              placeholder="Or type a custom medical history..."
+              className="flex-1 px-3 py-2 text-xs bg-white border border-[#8A8391]/15 rounded-lg text-[#2D2A32] focus:outline-none"
+              id="onboarding-custom-history"
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  e.preventDefault();
+                  const val = e.currentTarget.value.trim();
+                  if (val) {
+                    if (!onboardingData.medicalHistory.includes(val)) {
+                      setOnboardingData({ ...onboardingData, medicalHistory: [...onboardingData.medicalHistory, val] });
+                    }
+                    e.currentTarget.value = '';
+                  }
+                }
+              }}
+            />
+            <button
+              type="button"
+              onClick={() => {
+                const input = document.getElementById('onboarding-custom-history') as HTMLInputElement;
+                if (input) {
+                  const val = input.value.trim();
+                  if (val) {
+                    if (!onboardingData.medicalHistory.includes(val)) {
+                      setOnboardingData({ ...onboardingData, medicalHistory: [...onboardingData.medicalHistory, val] });
+                    }
+                    input.value = '';
+                  }
+                }
+              }}
+              className="bg-[#5B4B6E] hover:bg-[#5B4B6E]/95 text-white px-4 py-2 rounded-lg text-xs font-semibold"
+            >
+              Add
+            </button>
+          </div>
         </div>
       )
     },
@@ -378,30 +465,76 @@ Over the past ~6 weeks, Meera reports worsening sleep, increasing hot flashes an
       title: "Current medications & supplements",
       description: "List what you take daily or occasionally.",
       input: (
-        <div className="space-y-2">
-          {['Thyroxine 50 mcg every morning', 'Calcium + Vitamin D daily', 'Magnesium glycinate at night', 'occasional Paracetamol for joint pain'].map((med) => {
-            const isSelected = onboardingData.currentMedications.includes(med);
-            return (
-              <button
-                key={med}
-                type="button"
-                onClick={() => {
-                  const updated = isSelected
-                    ? onboardingData.currentMedications.filter((x) => x !== med)
-                    : [...onboardingData.currentMedications, med];
-                  setOnboardingData({ ...onboardingData, currentMedications: updated });
-                }}
-                className={`w-full p-3 rounded-xl border text-left flex items-center justify-between transition-all ${
-                  isSelected
-                    ? 'border-[#5B4B6E] bg-[#5B4B6E]/5 text-[#5B4B6E]'
-                    : 'border-[#8A8391]/20 bg-white text-[#2D2A32]'
-                }`}
-              >
-                <span>{med}</span>
-                {isSelected ? <Check className="w-4 h-4 text-[#5B4B6E]" /> : <div className="w-4 h-4 border rounded" />}
-              </button>
-            );
-          })}
+        <div className="space-y-3">
+          <div className="space-y-2 max-h-[220px] overflow-y-auto p-1">
+            {Array.from(new Set([
+              'Thyroxine 50 mcg every morning',
+              'Calcium + Vitamin D daily',
+              'Magnesium glycinate at night',
+              'occasional Paracetamol for joint pain',
+              ...onboardingData.currentMedications
+            ])).map((med) => {
+              const isSelected = onboardingData.currentMedications.includes(med);
+              return (
+                <button
+                  key={med}
+                  type="button"
+                  onClick={() => {
+                    const updated = isSelected
+                      ? onboardingData.currentMedications.filter((x) => x !== med)
+                      : [...onboardingData.currentMedications, med];
+                    setOnboardingData({ ...onboardingData, currentMedications: updated });
+                  }}
+                  className={`w-full p-3 rounded-xl border text-left flex items-center justify-between transition-all ${
+                    isSelected
+                      ? 'border-[#5B4B6E] bg-[#5B4B6E]/5 text-[#5B4B6E]'
+                      : 'border-[#8A8391]/20 bg-white text-[#2D2A32] hover:border-[#8A8391]'
+                  }`}
+                >
+                  <span className="text-sm">{med}</span>
+                  {isSelected ? <Check className="w-4 h-4 text-[#5B4B6E]" /> : <div className="w-4 h-4 border rounded border-[#8A8391]/30" />}
+                </button>
+              );
+            })}
+          </div>
+          <div className="flex gap-2 p-1 bg-[#FBF7F2] rounded-xl border border-[#8A8391]/10">
+            <input
+              type="text"
+              placeholder="Or type a custom medication..."
+              className="flex-1 px-3 py-2 text-xs bg-white border border-[#8A8391]/15 rounded-lg text-[#2D2A32] focus:outline-none"
+              id="onboarding-custom-medication"
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  e.preventDefault();
+                  const val = e.currentTarget.value.trim();
+                  if (val) {
+                    if (!onboardingData.currentMedications.includes(val)) {
+                      setOnboardingData({ ...onboardingData, currentMedications: [...onboardingData.currentMedications, val] });
+                    }
+                    e.currentTarget.value = '';
+                  }
+                }
+              }}
+            />
+            <button
+              type="button"
+              onClick={() => {
+                const input = document.getElementById('onboarding-custom-medication') as HTMLInputElement;
+                if (input) {
+                  const val = input.value.trim();
+                  if (val) {
+                    if (!onboardingData.currentMedications.includes(val)) {
+                      setOnboardingData({ ...onboardingData, currentMedications: [...onboardingData.currentMedications, val] });
+                    }
+                    input.value = '';
+                  }
+                }
+              }}
+              className="bg-[#5B4B6E] hover:bg-[#5B4B6E]/95 text-white px-4 py-2 rounded-lg text-xs font-semibold"
+            >
+              Add
+            </button>
+          </div>
         </div>
       )
     },
@@ -410,30 +543,76 @@ Over the past ~6 weeks, Meera reports worsening sleep, increasing hot flashes an
       title: "What are your primary goals with NURA?",
       description: "Select everything you wish to achieve.",
       input: (
-        <div className="space-y-2">
-          {['sleep better', 'understand my symptom patterns', 'prepare confidently for my doctor visit', 'feel like myself again'].map((goal) => {
-            const isSelected = onboardingData.goals.includes(goal);
-            return (
-              <button
-                key={goal}
-                type="button"
-                onClick={() => {
-                  const updated = isSelected
-                    ? onboardingData.goals.filter((x) => x !== goal)
-                    : [...onboardingData.goals, goal];
-                  setOnboardingData({ ...onboardingData, goals: updated });
-                }}
-                className={`w-full p-3 rounded-xl border text-left flex items-center justify-between transition-all ${
-                  isSelected
-                    ? 'border-[#5B4B6E] bg-[#5B4B6E]/5 text-[#5B4B6E]'
-                    : 'border-[#8A8391]/20 bg-white text-[#2D2A32]'
-                }`}
-              >
-                <span className="first-letter:uppercase">{goal}</span>
-                {isSelected ? <Check className="w-4 h-4 text-[#5B4B6E]" /> : <div className="w-4 h-4 border rounded" />}
-              </button>
-            );
-          })}
+        <div className="space-y-3">
+          <div className="space-y-2 max-h-[220px] overflow-y-auto p-1">
+            {Array.from(new Set([
+              'sleep better',
+              'understand my symptom patterns',
+              'prepare confidently for my doctor visit',
+              'feel like myself again',
+              ...onboardingData.goals
+            ])).map((goal) => {
+              const isSelected = onboardingData.goals.includes(goal);
+              return (
+                <button
+                  key={goal}
+                  type="button"
+                  onClick={() => {
+                    const updated = isSelected
+                      ? onboardingData.goals.filter((x) => x !== goal)
+                      : [...onboardingData.goals, goal];
+                    setOnboardingData({ ...onboardingData, goals: updated });
+                  }}
+                  className={`w-full p-3 rounded-xl border text-left flex items-center justify-between transition-all ${
+                    isSelected
+                      ? 'border-[#5B4B6E] bg-[#5B4B6E]/5 text-[#5B4B6E]'
+                      : 'border-[#8A8391]/20 bg-white text-[#2D2A32] hover:border-[#8A8391]'
+                  }`}
+                >
+                  <span className="text-sm first-letter:uppercase">{goal}</span>
+                  {isSelected ? <Check className="w-4 h-4 text-[#5B4B6E]" /> : <div className="w-4 h-4 border rounded border-[#8A8391]/30" />}
+                </button>
+              );
+            })}
+          </div>
+          <div className="flex gap-2 p-1 bg-[#FBF7F2] rounded-xl border border-[#8A8391]/10">
+            <input
+              type="text"
+              placeholder="Or type a custom goal..."
+              className="flex-1 px-3 py-2 text-xs bg-white border border-[#8A8391]/15 rounded-lg text-[#2D2A32] focus:outline-none"
+              id="onboarding-custom-goal"
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  e.preventDefault();
+                  const val = e.currentTarget.value.trim();
+                  if (val) {
+                    if (!onboardingData.goals.includes(val)) {
+                      setOnboardingData({ ...onboardingData, goals: [...onboardingData.goals, val] });
+                    }
+                    e.currentTarget.value = '';
+                  }
+                }
+              }}
+            />
+            <button
+              type="button"
+              onClick={() => {
+                const input = document.getElementById('onboarding-custom-goal') as HTMLInputElement;
+                if (input) {
+                  const val = input.value.trim();
+                  if (val) {
+                    if (!onboardingData.goals.includes(val)) {
+                      setOnboardingData({ ...onboardingData, goals: [...onboardingData.goals, val] });
+                    }
+                    input.value = '';
+                  }
+                }
+              }}
+              className="bg-[#5B4B6E] hover:bg-[#5B4B6E]/95 text-white px-4 py-2 rounded-lg text-xs font-semibold"
+            >
+              Add
+            </button>
+          </div>
         </div>
       )
     }
@@ -682,7 +861,7 @@ Over the past ~6 weeks, Meera reports worsening sleep, increasing hot flashes an
             <aside className="hidden md:flex flex-col w-64 bg-white border-r border-[#8A8391]/10 p-6 shrink-0 justify-between">
               <div className="space-y-8">
                 {/* Brand Logo */}
-                <div className="flex items-center gap-2 cursor-pointer" onClick={() => setCurrentView('Dashboard')}>
+                <div className="flex items-center gap-2 cursor-pointer hover:opacity-85 transition-opacity" onClick={() => setCurrentView('Landing')}>
                   <div className="w-10 h-10 rounded-xl bg-[#5B4B6E]/5 flex items-center justify-center border border-[#5B4B6E]/10">
                     <Heart className="w-6 h-6 text-[#5B4B6E]" />
                   </div>
@@ -839,7 +1018,7 @@ Over the past ~6 weeks, Meera reports worsening sleep, increasing hot flashes an
             <div className="space-y-16 animate-fade-in">
               {/* Sticky Header */}
               <header className="sticky top-0 bg-[#FBF7F2]/90 backdrop-blur-md py-4 border-b border-[#8A8391]/10 flex justify-between items-center z-30">
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 cursor-pointer hover:opacity-85 transition-opacity" onClick={() => setCurrentView('Landing')}>
                   <div className="w-9 h-9 rounded-xl bg-[#5B4B6E]/5 flex items-center justify-center border border-[#5B4B6E]/10">
                     <Heart className="w-5 h-5 text-[#5B4B6E]" />
                   </div>
@@ -2088,8 +2267,8 @@ Over the past ~6 weeks, Meera reports worsening sleep, increasing hot flashes an
               {/* Symptoms selector */}
               <div className="space-y-1.5">
                 <label className="text-xs font-semibold text-[#8A8391]">Symptom Tracker</label>
-                <div className="flex flex-wrap gap-1.5">
-                  {[
+                <div className="flex flex-wrap gap-1.5 max-h-[160px] overflow-y-auto p-1">
+                  {Array.from(new Set([
                     'hot flashes',
                     'night sweats',
                     'sleep disturbance',
@@ -2100,8 +2279,9 @@ Over the past ~6 weeks, Meera reports worsening sleep, increasing hot flashes an
                     'fatigue',
                     'joint aches',
                     'headache',
-                    'palpitations'
-                  ].map((sym) => {
+                    'palpitations',
+                    ...qaSymptoms
+                  ])).map((sym) => {
                     const active = qaSymptoms.includes(sym);
                     return (
                       <button
@@ -2113,7 +2293,7 @@ Over the past ~6 weeks, Meera reports worsening sleep, increasing hot flashes an
                             : [...qaSymptoms, sym];
                           setQaSymptoms(updated);
                         }}
-                        className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-all ${
+                        className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-all capitalize ${
                           active
                             ? 'bg-[#8BA888]/15 border-[#8BA888] text-[#5B4B6E] font-bold'
                             : 'bg-[#FBF7F2] border-[#8A8391]/15 text-[#2D2A32]'
@@ -2123,6 +2303,44 @@ Over the past ~6 weeks, Meera reports worsening sleep, increasing hot flashes an
                       </button>
                     );
                   })}
+                </div>
+                <div className="flex gap-2 mt-2">
+                  <input
+                    type="text"
+                    placeholder="Add custom symptom..."
+                    className="flex-1 px-3 py-1.5 text-xs bg-[#FBF7F2] border border-[#8A8391]/15 rounded-lg text-[#2D2A32] focus:outline-none"
+                    id="qa-custom-symptom"
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        e.preventDefault();
+                        const val = e.currentTarget.value.trim().toLowerCase();
+                        if (val) {
+                          if (!qaSymptoms.includes(val)) {
+                            setQaSymptoms([...qaSymptoms, val]);
+                          }
+                          e.currentTarget.value = '';
+                        }
+                      }
+                    }}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const input = document.getElementById('qa-custom-symptom') as HTMLInputElement;
+                      if (input) {
+                        const val = input.value.trim().toLowerCase();
+                        if (val) {
+                          if (!qaSymptoms.includes(val)) {
+                            setQaSymptoms([...qaSymptoms, val]);
+                          }
+                          input.value = '';
+                        }
+                      }
+                    }}
+                    className="bg-[#5B4B6E] text-white px-3 py-1.5 rounded-lg text-xs font-semibold"
+                  >
+                    Add
+                  </button>
                 </div>
               </div>
 
@@ -2219,7 +2437,7 @@ Over the past ~6 weeks, Meera reports worsening sleep, increasing hot flashes an
               {/* Medication compliance checkboxes */}
               <div className="space-y-1.5">
                 <label className="text-xs font-semibold text-[#8A8391]">Medications & Supplements Taken Today</label>
-                <div className="grid grid-cols-3 gap-2">
+                <div className="grid grid-cols-3 gap-2 max-h-[120px] overflow-y-auto p-1">
                   {qaMeds.map((m, idx) => (
                     <button
                       key={m.name}
@@ -2237,6 +2455,44 @@ Over the past ~6 weeks, Meera reports worsening sleep, increasing hot flashes an
                       {m.taken ? <Check className="w-3 h-3 text-emerald-600 shrink-0" /> : <div className="w-2.5 h-2.5 border rounded-sm shrink-0" />}
                     </button>
                   ))}
+                </div>
+                <div className="flex gap-2 mt-2">
+                  <input
+                    type="text"
+                    placeholder="Add custom medication..."
+                    className="flex-1 px-3 py-1.5 text-xs bg-[#FBF7F2] border border-[#8A8391]/15 rounded-lg text-[#2D2A32] focus:outline-none"
+                    id="qa-custom-medication"
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        e.preventDefault();
+                        const val = e.currentTarget.value.trim();
+                        if (val) {
+                          if (!qaMeds.some(m => m.name.toLowerCase() === val.toLowerCase())) {
+                            setQaMeds([...qaMeds, { name: val, taken: true }]);
+                          }
+                          e.currentTarget.value = '';
+                        }
+                      }
+                    }}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const input = document.getElementById('qa-custom-medication') as HTMLInputElement;
+                      if (input) {
+                        const val = input.value.trim();
+                        if (val) {
+                          if (!qaMeds.some(m => m.name.toLowerCase() === val.toLowerCase())) {
+                            setQaMeds([...qaMeds, { name: val, taken: true }]);
+                          }
+                          input.value = '';
+                        }
+                      }
+                    }}
+                    className="bg-[#5B4B6E] text-white px-3 py-1.5 rounded-lg text-xs font-semibold"
+                  >
+                    Add
+                  </button>
                 </div>
               </div>
 
